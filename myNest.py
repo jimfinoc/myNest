@@ -18,7 +18,6 @@ usernameAndPassword = json.load(fileData)
 def c_to_f(c):
         return c * 9.0 / 5.0 + 32.0
 
-
 class Nest:
     def __init__(self, username, password, serial=None, index=0):
         self.username = username
@@ -35,15 +34,11 @@ class Nest:
 
     def login(self):
         data = urllib.urlencode({"username": self.username, "password": self.password})
-
         req = urllib2.Request("https://home.nest.com/user/login",
                               data,
                               {"user-agent":"Nest/1.1.0.10 CFNetwork/548.0.4"})
-
         res = urllib2.urlopen(req).read()
-
         res = self.loads(res)
-
         self.transport_url = res["urls"]["transport_url"]
         self.access_token = res["access_token"]
         self.userid = res["userid"]
@@ -54,26 +49,19 @@ class Nest:
                                        "Authorization":"Basic " + self.access_token,
                                        "X-nl-user-id": self.userid,
                                        "X-nl-protocol-version": "1"})
-
         res = urllib2.urlopen(req).read()
-
         res = self.loads(res)
-
         self.structure_id = res["structure"].keys()[0]
-
         if (self.serial is None):
             self.device_id = res["structure"][self.structure_id]["devices"][self.index]
             self.serial = self.device_id.split(".")[1]
-
         self.status = res
 
     def show_status(self):
         shared = self.status["shared"][self.serial]
         device = self.status["device"][self.serial]
-
         allvars = shared
         allvars.update(device)
-
         for k in sorted(allvars.keys()):
              print k + "."*(32-len(k)) + ":", allvars[k]
 
